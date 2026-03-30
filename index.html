@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALEX SMART English Speaking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; }
+        .certificate-frame {
+            width: 850px; height: 620px; background: white; border: 15px double #FFD700;
+            padding: 20px; margin: 20px auto; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .cert-inner { border: 2px solid #FFD700; height: 100%; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; }
+        .cert-title { font-size: 85px; color: #1e40af; font-weight: bold; font-family: 'Times New Roman', serif; margin-top: -10px; }
+        .cert-name { font-size: 50px; color: #dc2626; font-weight: bold; margin: 10px 0; font-style: italic; }
+        .cert-unit { font-size: 24px; font-weight: bold; color: #000; text-transform: uppercase; }
+        .cert-quote { font-size: 22px; color: #16a34a; font-style: italic; font-weight: bold; margin: 20px 0; }
+        .cert-footer { display: flex; justify-content: space-between; padding: 0 50px; font-weight: bold; font-size: 20px; border-top: 1px dashed #ccc; padding-top: 15px; }
+        
+        .btn-mic-active { background-color: #ef4444 !important; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @media print { .no-print { display: none; } body { background: white; } }
+    </style>
+</head>
+<body>
+
+<div id="app-container" class="max-w-4xl mx-auto my-8 no-print">
+    <!-- HEADER -->
+    <div class="bg-[#0056b3] text-white p-6 rounded-t-2xl text-center shadow-xl">
+        <h1 class="text-3xl font-bold italic tracking-widest uppercase">ALEX SMART English Speaking 🚀</h1>
+    </div>
+
+    <!-- MAIN BOX -->
+    <div class="bg-white p-8 shadow-2xl rounded-b-2xl min-h-[580px]">
+        
+        <!-- STEP 1: LOGIN -->
+        <div id="step-1" class="space-y-6">
+            <h2 class="text-xl font-bold text-gray-600 border-b pb-2">Nhập thông tin học sinh</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <input id="stu-name" type="text" placeholder="Họ và tên (VD: Nguyễn Hoàng Minh)" class="border-2 p-4 rounded-xl focus:border-blue-500 outline-none shadow-sm">
+                <input id="stu-class" type="text" placeholder="Lớp (VD: 5/1)" class="border-2 p-4 rounded-xl focus:border-blue-500 outline-none shadow-sm">
+                <select id="stu-mode" class="border-2 p-4 rounded-xl shadow-sm"><option>Alex Asks (Alex hỏi)</option></select>
+                <select id="stu-unit" class="border-2 p-4 rounded-xl shadow-sm font-bold text-blue-800"></select>
+            </div>
+            <button onclick="startApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-bold text-2xl shadow-lg transition-all transform hover:-translate-y-1">BẮT ĐẦU LUYỆN NÓI</button>
+        </div>
+
+        <!-- STEP 2: CONVERSATION -->
+        <div id="step-2" class="hidden text-center fade-in">
+            <div id="unit-tag" class="text-sm font-bold text-blue-600 bg-blue-50 px-5 py-2 rounded-full inline-block mb-6 shadow-sm border border-blue-100"></div>
+            <h2 id="alex-question" class="text-3xl font-bold text-slate-800 mb-10 min-h-[100px] flex items-center justify-center px-4"></h2>
+            
+            <div class="mb-10">
+                <div class="inline-block border-2 border-dashed border-blue-300 rounded-3xl px-14 py-6 bg-blue-50/50">
+                    <span id="user-voice-text" class="text-2xl text-gray-400 italic">"Hãy nhấn Micro để trả lời..."</span>
+                </div>
+            </div>
+
+            <button id="mic-trigger" onclick="toggleMic()" class="bg-blue-800 text-white w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all mx-auto mb-10 hover:scale-110">
+                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 005.93 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z"></path></svg>
+            </button>
+
+            <!-- FEEDBACK AREA -->
+            <div id="ai-feedback" class="hidden text-left space-y-5 animate-pulse-once">
+                <div class="border-l-8 border-orange-500 rounded-xl p-6 bg-orange-50 shadow-md">
+                    <p class="text-orange-700 font-black flex items-center gap-2">⚠️ REPEAT AFTER ALEX:</p>
+                    <p id="suggest-text" class="text-3xl font-bold text-red-600 cursor-pointer mt-3 leading-tight" onclick="playVoice(this.innerText)"></p>
+                    <p class="text-sm text-blue-600 italic mt-2 underline font-medium">Click để nghe Alex phát âm mẫu</p>
+                </div>
+
+                <div class="bg-white border-2 border-red-100 rounded-xl p-6 shadow-md">
+                    <p class="font-bold text-gray-700 mb-3">📝 Review Your Mistakes:</p>
+                    <div class="space-y-2">
+                        <p id="mistake-you" class="text-xl"></p>
+                        <p id="mistake-correct" class="text-xl text-green-700 font-bold"></p>
+                    </div>
+                </div>
+
+                <button onclick="nextQ()" class="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl font-bold text-2xl shadow-xl transition-all uppercase">Câu tiếp theo ➔</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: SUCCESS -->
+        <div id="step-3" class="hidden text-center py-10 space-y-8">
+            <h2 class="text-5xl font-black text-blue-900">HOÀN THÀNH! 🎉</h2>
+            <div class="text-7xl text-yellow-400 drop-shadow-lg">⭐⭐⭐⭐⭐</div>
+            <div class="bg-blue-50 p-8 rounded-3xl border-2 border-blue-100 max-w-xl mx-auto">
+                <p id="final-msg" class="text-2xl italic text-blue-800 font-medium"></p>
+            </div>
+            <button onclick="showCert()" class="bg-red-600 hover:bg-red-700 text-white px-16 py-6 rounded-full font-bold text-3xl shadow-2xl transition-all transform hover:scale-105">NHẬN GIẤY CHỨNG NHẬN 🏆</button>
+        </div>
+    </div>
+</div>
+
+<!-- CERTIFICATE PRINT AREA -->
+<div id="cert-area" class="hidden">
+    <div class="certificate-frame">
+        <div class="cert-inner">
+            <div class="flex justify-center"><img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" width="90"></div>
+            <h1 class="cert-title uppercase">CERTIFICATE</h1>
+            <div>
+                <p class="text-2xl font-bold italic mb-2">Proudly presented to</p>
+                <h2 id="cert-name" class="cert-name uppercase italic">Student Name</h2>
+            </div>
+            <div>
+                <h3 id="cert-unit" class="cert-unit">Mastered Unit 1: All about me!</h3>
+                <p id="cert-class" class="text-2xl font-bold mt-2">Class: 5/1</p>
+            </div>
+            <p class="cert-quote">"Please talk to Alex every day to speak English better!"</p>
+            <div class="cert-footer">
+                <div class="text-center">Mrs. Tran Thi Kim Yen</div>
+                <div class="text-center">Mrs. Pham Thi Ngoc Bich</div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-10 no-print pb-20">
+        <button onclick="window.print()" class="bg-green-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg text-xl">In giấy chứng nhận</button>
+        <button onclick="location.reload()" class="bg-gray-500 text-white px-10 py-4 rounded-xl font-bold shadow-lg text-xl ml-4">Làm lại bài khác</button>
+    </div>
+</div>
+
+<script>
+    // DỮ LIỆU TÊN 20 UNIT CHUẨN SÁCH GIÁO KHOA GLOBAL SUCCESS 5
+    const UNIT_DATA = {
+        1: { name: "All about me!", script: [
+            { q: "Can you tell me about yourself?", keys: ["name", "is", "am"], model: "My name is [NAME]. I'm in Class [CLASS]. I live in the countryside." },
+            { q: "What's your address?", keys: ["it", "street", "village", "at"], model: "It's 81, Tran Hung Dao Street." }
+        ]},
+        2: { name: "Our holidays", script: [
+            { q: "Where were you on holiday?", keys: ["was", "at", "in", "beach"], model: "I was at the seaside with my family." },
+            { q: "What was the trip like?", keys: ["it", "was", "nice", "great"], model: "It was wonderful! I enjoyed the fresh air." }
+        ]},
+        3: { name: "My favourite stories", script: [
+            { q: "What are you reading?", keys: ["reading", "is", "story"], model: "I'm reading the story of Mai An Tiem." },
+            { q: "What's the main character like?", keys: ["is", "he", "she", "kind", "brave"], model: "He is very brave and hard-working." }
+        ]},
+        4: { name: "Our free-time activities", script: [
+            { q: "What do you do in your free time?", keys: ["watch", "play", "clean", "go"], model: "I often watch cartoons and clean the house." }
+        ]},
+        5: { name: "My future job", script: [
+            { q: "What would you like to be in the future?", keys: ["be", "pilot", "doctor", "teacher"], model: "I'd like to be a teacher." },
+            { q: "Why would you like to be a teacher?", keys: ["because", "teach", "children"], model: "Because I'd like to teach children." }
+        ]},
+        6: { name: "Our school facilities", script: [
+            { q: "What's your school like?", keys: ["is", "big", "modern", "beautiful"], model: "It is big and very modern." }
+        ]},
+        7: { name: "Our favourite sports and games", script: [
+            { q: "What's your favourite sport?", keys: ["is", "football", "badminton", "chess"], model: "My favourite sport is football." }
+        ]},
+        8: { name: "Our favourite TV programmes", script: [
+            { q: "What TV programme do you like best?", keys: ["like", "cartoons", "music", "news"], model: "I like cartoons best because they are funny." }
+        ]},
+        9: { name: "Our favourite animals", script: [
+            { q: "Which animal do you want to see?", keys: ["want", "monkeys", "tigers", "elephants"], model: "I want to see the monkeys because they are clever." }
+        ]},
+        10: { name: "Our summer holidays", script: [
+            { q: "Where are you going this summer?", keys: ["going", "to", "Ha Long", "Phu Quoc"], model: "I'm going to Phu Quoc with my parents." }
+        ]},
+        11: { name: "Family health", script: [
+            { q: "What's the matter with you?", keys: ["have", "headache", "fever", "cough"], model: "I have a bad headache." }
+        ]},
+        12: { name: "Safe at home", script: [
+            { q: "What are you doing with the knife?", keys: ["cutting", "apple", "fruit"], model: "I'm cutting an apple. Don't play with the knife!" }
+        ]},
+        13: { name: "Directions", script: [
+            { q: "How can I get to the post office?", keys: ["take", "bus", "walk", "turn"], model: "You can take a bus or walk for 5 minutes." }
+        ]},
+        14: { name: "Seasons and weather", script: [
+            { q: "What's the weather like today?", keys: ["is", "sunny", "rainy", "cold"], model: "It's sunny and very hot today." }
+        ]},
+        15: { name: "Our environment", script: [
+            { q: "What should we do to protect our environment?", keys: ["pick", "rubbish", "plant", "trees"], model: "We should plant more trees and pick up rubbish." }
+        ]},
+        16: { name: "Places to visit", script: [
+            { q: "Which place would you like to visit?", keys: ["visit", "pagoda", "museum", "park"], model: "I'd like to visit the History Museum." }
+        ]},
+        17: { name: "Our favourite food and drink", script: [
+            { q: "What's your favourite food?", keys: ["is", "chicken", "beef", "fish"], model: "My favourite food is chicken noodles." }
+        ]},
+        18: { name: "Healthy eating", script: [
+            { q: "What do you usually have for breakfast?", keys: ["have", "bread", "eggs", "milk"], model: "I usually have bread and a glass of milk." }
+        ]},
+        19: { name: "Future plans", script: [
+            { q: "What are you going to do this weekend?", keys: ["going", "visit", "play", "help"], model: "I'm going to visit my grandparents this weekend." }
+        ]},
+        20: { name: "Our school trip", script: [
+            { q: "Where did you go on your school trip?", keys: ["went", "to", "farm", "zoo"], model: "We went to a traditional craft village." }
+        ]}
+    };
+
+    let session = { name: "", class: "", uId: 1, qIdx: 0, recording: false };
+
+    // Fill Select Unit
+    const uSelect = document.getElementById('stu-unit');
+    for(let i=1; i<=20; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.innerText = `Unit ${i}: ${UNIT_DATA[i].name}`;
+        uSelect.appendChild(opt);
+    }
+
+    function startApp() {
+        session.name = document.getElementById('stu-name').value || "Học sinh";
+        session.class = document.getElementById('stu-class').value || "5";
+        session.uId = document.getElementById('stu-unit').value;
+        session.qIdx = 0;
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.remove('hidden');
+        ask();
+    }
+
+    function ask() {
+        const item = UNIT_DATA[session.uId].script[session.qIdx];
+        document.getElementById('unit-tag').innerText = `Unit ${session.uId}: ${UNIT_DATA[session.uId].name} - Câu ${session.qIdx + 1}`;
+        document.getElementById('alex-question').innerText = item.q;
+        document.getElementById('ai-feedback').classList.add('hidden');
+        document.getElementById('user-voice-text').innerText = '"Nhấn Micro để trả lời..."';
+        playVoice(item.q);
+    }
+
+    function toggleMic() {
+        const sr = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!sr) return alert("Trình duyệt không hỗ trợ nhận diện giọng nói!");
+        const rec = new sr();
+        rec.lang = 'en-US';
+        rec.onstart = () => { 
+            document.getElementById('mic-trigger').classList.add('btn-mic-active');
+            document.getElementById('user-voice-text').innerText = "Đang lắng nghe...";
+        };
+        rec.onresult = (e) => {
+            const text = e.results[0][0].transcript;
+            document.getElementById('user-voice-text').innerText = `"${text}"`;
+            checkAnswer(text);
+        };
+        rec.onend = () => document.getElementById('mic-trigger').classList.remove('btn-mic-active');
+        rec.start();
+    }
+
+    function checkAnswer(text) {
+        const item = UNIT_DATA[session.uId].script[session.qIdx];
+        const model = item.model.replace("[NAME]", session.name).replace("[CLASS]", session.class);
+        const ok = item.keys.some(k => text.toLowerCase().includes(k));
+
+        document.getElementById('ai-feedback').classList.remove('hidden');
+        document.getElementById('suggest-text').innerText = model;
+        document.getElementById('mistake-you').innerHTML = `❌ Bạn đã nói: <span class="text-red-600 font-bold">${text}</span>`;
+        document.getElementById('mistake-correct').innerHTML = `✅ Câu chuẩn: <span class="text-green-700 font-bold">${model}</span>`;
+
+        if (ok) playVoice("Very good! Please repeat the full sentence.");
+        else playVoice("Nice try! Listen and repeat after Alex.");
+    }
+
+    function nextQ() {
+        session.qIdx++;
+        if (session.qIdx < UNIT_DATA[session.uId].script.length) ask();
+        else {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+            document.getElementById('final-msg').innerText = `Chúc mừng ${session.name}! Em đã hoàn thành xuất sắc Unit ${session.uId}. Khả năng nói của em đang tiến bộ rõ rệt!`;
+            new Audio('https://www.soundjay.com/misc/sounds/bell-ring-01.mp3').play();
+        }
+    }
+
+    function showCert() {
+        document.getElementById('app-container').classList.add('hidden');
+        document.getElementById('cert-area').classList.remove('hidden');
+        document.getElementById('cert-name').innerText = session.name;
+        document.getElementById('cert-class').innerText = "Lớp: " + session.class;
+        document.getElementById('cert-unit').innerText = `Mastered Unit ${session.uId}: ${UNIT_DATA[session.uId].name}`;
+    }
+
+    function playVoice(t) {
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = 'en-US'; u.rate = 0.85;
+        window.speechSynthesis.speak(u);
+    }
+</script>
+
+</body>
+</html>
